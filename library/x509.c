@@ -400,11 +400,6 @@ static int x509_get_attr_type_value( unsigned char **p,
 }
 
 /*
- *  Name ::= CHOICE { -- only one possibility for now --
- *       rdnSequence  RDNSequence }
- *
- *  RDNSequence ::= SEQUENCE OF RelativeDistinguishedName
- *
  *  RelativeDistinguishedName ::=
  *    SET OF AttributeTypeAndValue
  *
@@ -416,11 +411,9 @@ static int x509_get_attr_type_value( unsigned char **p,
  *
  *  AttributeValue ::= ANY DEFINED BY AttributeType
  *
- * The data structure is optimized for the common case where each RDN has only
- * one element, which is represented as a list of AttributeTypeAndValue.
- * For the general case we still use a flat list, but we mark elements of the
- * same set so that they are "merged" together in the functions that consume
- * this list, eg x509_dn_gets().
+ *  We restrict RelativeDistinguishedName to be a set of 1 element. This is
+ *  the most common case, and our x509_name structure currently can't handle
+ *  more than that.
  */
 int x509_get_name( unsigned char **p, const unsigned char *end,
                    x509_name *cur )
@@ -433,7 +426,7 @@ int x509_get_name( unsigned char **p, const unsigned char *end,
     while( 1 )
     {
         /*
-         * parse SET
+         * parse first SET, restricted to 1 element
          */
         if( ( ret = asn1_get_tag( p, end, &set_len,
                 ASN1_CONSTRUCTED | ASN1_SET ) ) != 0 )
@@ -441,26 +434,11 @@ int x509_get_name( unsigned char **p, const unsigned char *end,
 
         end_set  = *p + set_len;
 
-        while( 1 )
-        {
-            if( ( ret = x509_get_attr_type_value( p, end_set, cur ) ) != 0 )
-                return( ret );
+        if( ( ret = x509_get_attr_type_value( p, end_set, cur ) ) != 0 )
+            return( ret );
 
-            if( *p == end_set )
-                break;
-
-            /* Mark this item as being not the only one in a set */
-            cur->next_merged = 1;
-
-            cur->next = polarssl_malloc( sizeof( x509_name ) );
-
-            if( cur->next == NULL )
-                return( POLARSSL_ERR_X509_MALLOC_FAILED );
-
-            memset( cur->next, 0, sizeof( x509_name ) );
-
-            cur = cur->next;
-        }
+        if( *p != end_set )
+            return( POLARSSL_ERR_X509_FEATURE_UNAVAILABLE );
 
         /*
          * continue until end of SEQUENCE is reached
@@ -726,7 +704,7 @@ int x509_dn_gets( char *buf, size_t size, const x509_name *dn )
 {
     int ret;
     size_t i, n;
-    unsigned char c, merge = 0;
+    unsigned char c;
     const x509_name *name;
     const char *short_name = NULL;
     char s[X509_MAX_DN_NAME_SIZE], *p;
@@ -747,7 +725,7 @@ int x509_dn_gets( char *buf, size_t size, const x509_name *dn )
 
         if( name != dn )
         {
-            ret = polarssl_snprintf( p, n, merge ? " + " : ", " );
+            ret = polarssl_snprintf( p, n, ", " );
             SAFE_SNPRINTF();
         }
 
@@ -772,8 +750,6 @@ int x509_dn_gets( char *buf, size_t size, const x509_name *dn )
         s[i] = '\0';
         ret = polarssl_snprintf( p, n, "%s", s );
         SAFE_SNPRINTF();
-
-        merge = name->next_merged;
         name = name->next;
     }
 
