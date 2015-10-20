@@ -644,6 +644,18 @@ int x509_get_ext( unsigned char **p, const unsigned char *end,
     return( 0 );
 }
 
+int x509_load_file( const char *path, unsigned char **buf, size_t *n )
+{
+    int ret = pk_load_file(path, buf, n);
+
+    if ( ret == POLARSSL_ERR_PK_FILE_IO_ERROR )
+        ret = POLARSSL_ERR_X509_FILE_IO_ERROR;
+    else if ( ret == POLARSSL_ERR_PK_MALLOC_FAILED )
+        ret = POLARSSL_ERR_X509_MALLOC_FAILED;
+
+    return( ret );
+}
+
 #if defined(_MSC_VER) && !defined snprintf && !defined(EFIX64) && \
     !defined(EFI32)
 #include <stdarg.h>
