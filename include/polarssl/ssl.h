@@ -871,9 +871,11 @@ struct _ssl_context
     int verify_result;                  /*!<  verification result     */
 #if defined(POLARSSL_SSL_RENEGOTIATION)
     int disable_renegotiation;          /*!<  enable/disable renegotiation   */
-    int renego_max_records;             /*!<  grace period for renegotiation */
 #endif
     int allow_legacy_renegotiation;     /*!<  allow legacy renegotiation     */
+#if defined(POLARSSL_SSL_RENEGOTIATION)
+    int renego_max_records;             /*!<  grace period for renegotiation */
+#endif
     const int *ciphersuite_list[4];     /*!<  allowed ciphersuites / version */
 #if defined(POLARSSL_SSL_SET_CURVES)
     const ecp_group_id *curve_list;     /*!<  allowed curves                 */
