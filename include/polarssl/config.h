@@ -896,7 +896,7 @@
  *
  * Comment this macro to disable support for Encrypt-then-MAC
  */
-#define POLARSSL_SSL_ENCRYPT_THEN_MAC
+//#define POLARSSL_SSL_ENCRYPT_THEN_MAC
 
 /** \def POLARSSL_SSL_EXTENDED_MASTER_SECRET
  *
@@ -914,7 +914,7 @@
  *
  * Comment this macro to disable support for Extended Master Secret.
  */
-#define POLARSSL_SSL_EXTENDED_MASTER_SECRET
+//#define POLARSSL_SSL_EXTENDED_MASTER_SECRET
 
 /**
  * \def POLARSSL_SSL_FALLBACK_SCSV
@@ -931,7 +931,7 @@
  *
  * Comment this macro to disable support for FALLBACK_SCSV
  */
-#define POLARSSL_SSL_FALLBACK_SCSV
+//#define POLARSSL_SSL_FALLBACK_SCSV
 
 /**
  * \def POLARSSL_SSL_HW_RECORD_ACCEL
@@ -953,7 +953,7 @@
  *
  * Comment this macro to disable 1/n-1 record splitting.
  */
-#define POLARSSL_SSL_CBC_RECORD_SPLITTING
+//#define POLARSSL_SSL_CBC_RECORD_SPLITTING
 
 /**
  * \def POLARSSL_SSL_DISABLE_RENEGOTIATION
