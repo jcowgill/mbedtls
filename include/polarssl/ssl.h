@@ -253,9 +253,6 @@
 #define SSL_CBC_RECORD_SPLITTING_DISABLED   -1
 #define SSL_CBC_RECORD_SPLITTING_ENABLED     0
 
-#define SSL_ARC4_ENABLED                0
-#define SSL_ARC4_DISABLED               1
-
 /**
  * \name SECTION: Module settings
  *
@@ -755,8 +752,6 @@ struct _ssl_context
 #if defined(POLARSSL_SSL_EXTENDED_MASTER_SECRET)
     char extended_ms;           /*!< flag for extended master secret  */
 #endif
-    char arc4_disabled;         /*!< flag for disabling RC4           */
-
     /*
      * Callbacks (RNG, debug, I/O, verification)
      */
@@ -1520,21 +1515,6 @@ void ssl_set_encrypt_then_mac( ssl_context *ssl, char etm );
  */
 void ssl_set_extended_master_secret( ssl_context *ssl, char ems );
 #endif /* POLARSSL_SSL_EXTENDED_MASTER_SECRET */
-
-/**
- * \brief          Disable or enable support for RC4
- *                 (Default: SSL_ARC4_ENABLED)
- *
- * \note           Though the default is RC4 for compatibility reasons in the
- *                 1.3 branch, the recommended value is SSL_ARC4_DISABLED.
- *
- * \note           This function will likely be removed in future versions as
- *                 RC4 will then be disabled by default at compile time.
- *
- * \param ssl      SSL context
- * \param arc4     SSL_ARC4_ENABLED or SSL_ARC4_DISABLED
- */
-void ssl_set_arc4_support( ssl_context *ssl, char arc4 );
 
 #if defined(POLARSSL_SSL_MAX_FRAGMENT_LENGTH)
 /**
