@@ -31,7 +31,7 @@ LOCAL_CFLAGS += -fPIC -fpic
 endif
 endif
 
-SOEXT=so.9
+SOEXT=so.7
 
 DLEXT=so
 # OSX shared library extension:
@@ -83,7 +83,7 @@ static: libpolarssl.a
 
 shared: libpolarssl.$(DLEXT)
 
-libpolarssl.a: libmbedtls.a
+libmbedtls.a: libpolarssl.a
 	echo "  LN    $@ -> $?"
 ifndef WINDOWS
 	ln -sf $? $@
@@ -91,13 +91,13 @@ else
 	copy /y /b $? $@
 endif
 
-libmbedtls.a: $(OBJS)
+libpolarssl.a: $(OBJS)
 	echo "  AR    $@"
 	$(AR) rc $@ $(OBJS)
 	echo "  RL    $@"
 	$(AR) s $@
 
-libpolarssl.$(DLEXT): libmbedtls.$(DLEXT)
+libmbedtls.$(DLEXT): libpolarssl.$(DLEXT)
 	echo "  LN    $@ -> $?"
 ifndef WINDOWS
 	ln -sf $? $@
@@ -112,19 +112,19 @@ else
 endif
 endif
 
-libmbedtls.$(SOEXT): $(OBJS)
+libpolarssl.$(SOEXT): $(OBJS)
 	echo "  LD    $@"
 	$(CC) -shared -Wl,-soname,$@ $(LOCAL_LDFLAGS) $(LDFLAGS) -o $@ $(OBJS)
 
-libmbedtls.so: libmbedtls.$(SOEXT)
-	echo "  LN    $@ -> libmbedtls.$(SOEXT)"
-	ln -sf libmbedtls.$(SOEXT) $@
+libpolarssl.so: libpolarssl.$(SOEXT)
+	echo "  LN    $@ -> libpolarssl.$(SOEXT)"
+	ln -sf $< $@
 
-libmbedtls.dylib: $(OBJS)
+libpolarssl.dylib: $(OBJS)
 	echo "  LD    $@"
 	$(CC) -dynamiclib $(LOCAL_LDFLAGS) $(LDFLAGS) -o $@ $(OBJS)
 
-libmbedtls.dll: $(OBJS)
+libpolarssl.dll: $(OBJS)
 	echo "  LD    $@"
 	$(CC) -shared -Wl,-soname,$@ -Wl,--out-implib,$@.a -o $@ $(OBJS) -lws2_32 -lwinmm -lgdi32 -static-libgcc $(LOCAL_LDFLAGS) $(LDFLAGS)
 
