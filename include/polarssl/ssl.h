@@ -1948,8 +1948,7 @@ static inline x509_crt *ssl_own_cert( ssl_context *ssl )
  */
 int ssl_check_cert_usage( const x509_crt *cert,
                           const ssl_ciphersuite_t *ciphersuite,
-                          int cert_endpoint,
-                          int *flags );
+                          int cert_endpoint );
 #endif /* POLARSSL_X509_CRT_PARSE_C */
 
 /* constant-time buffer comparison */

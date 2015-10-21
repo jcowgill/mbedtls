@@ -2858,8 +2858,7 @@ int ssl_parse_certificate( ssl_context *ssl )
 
         if( ssl_check_cert_usage( ssl->session_negotiate->peer_cert,
                                   ciphersuite_info,
-                                  ! ssl->endpoint,
-                                 &ssl->session_negotiate->verify_result ) != 0 )
+                                  ! ssl->endpoint ) != 0 )
         {
             SSL_DEBUG_MSG( 1, ( "bad certificate (usage extensions)" ) );
             if( ret == 0 )
@@ -5202,10 +5201,8 @@ int ssl_curve_is_acceptable( const ssl_context *ssl, ecp_group_id grp_id )
 #if defined(POLARSSL_X509_CRT_PARSE_C)
 int ssl_check_cert_usage( const x509_crt *cert,
                           const ssl_ciphersuite_t *ciphersuite,
-                          int cert_endpoint,
-                          int *flags )
+                          int cert_endpoint )
 {
-    int ret = 0;
 #if defined(POLARSSL_X509_CHECK_KEY_USAGE)
     int usage = 0;
 #endif
@@ -5218,7 +5215,6 @@ int ssl_check_cert_usage( const x509_crt *cert,
     !defined(POLARSSL_X509_CHECK_EXTENDED_KEY_USAGE)
     ((void) cert);
     ((void) cert_endpoint);
-    ((void) flags);
 #endif
 
 #if defined(POLARSSL_X509_CHECK_KEY_USAGE)
@@ -5258,10 +5254,7 @@ int ssl_check_cert_usage( const x509_crt *cert,
     }
 
     if( x509_crt_check_key_usage( cert, usage ) != 0 )
-    {
-        *flags |= BADCERT_KEY_USAGE;
-        ret = -1;
-    }
+        return( -1 );
 #else
     ((void) ciphersuite);
 #endif /* POLARSSL_X509_CHECK_KEY_USAGE */
@@ -5279,13 +5272,10 @@ int ssl_check_cert_usage( const x509_crt *cert,
     }
 
     if( x509_crt_check_extended_key_usage( cert, ext_oid, ext_len ) != 0 )
-    {
-        *flags |= BADCERT_EXT_KEY_USAGE;
-        ret = -1;
-    }
+        return( -1 );
 #endif /* POLARSSL_X509_CHECK_EXTENDED_KEY_USAGE */
 
-    return( ret );
+    return( 0 );
 }
 #endif /* POLARSSL_X509_CRT_PARSE_C */
 
